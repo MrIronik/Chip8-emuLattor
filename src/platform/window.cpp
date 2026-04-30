@@ -11,8 +11,8 @@ Window::Window()
 
     window_ = SDL_CreateWindow(
         "emuLattor", 
-        640, 
-        320, 
+        640,        // 10x times orginal resolution
+        320,        // 10x times orginal resolution
         SDL_WINDOW_RESIZABLE);
 
     if (!window_) throw std::runtime_error("Window failed");
@@ -20,49 +20,63 @@ Window::Window()
     renderer_ = SDL_CreateRenderer(window_, nullptr);
 
     if (!renderer_) throw std::runtime_error("Rendered failed");
+
+    texture_ = SDL_CreateTexture(
+        renderer_,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_STREAMING,
+        64,
+        32
+    );
+
+    if (!texture_) throw std::runtime_error("Texture failed");
 }
 
 Window::~Window()
 {
     SDL_DestroyRenderer(renderer_);
     SDL_DestroyWindow(window_);
+    SDL_DestroyTexture(texture_);
     SDL_Quit();
 }
 
-void Window::run()
+void Window::event()
 {
-
-    window_is_running_ = true;
     SDL_Event event;
 
-    bool change = true;
 
-    while (window_is_running_)
-    {
-        while (SDL_PollEvent(&event))
-        {
-            if (event.type == SDL_EVENT_QUIT)
-                window_is_running_ = false;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_EVENT_QUIT) is_running_ = false;
         }
 
-        if (change) {
-            SDL_SetRenderDrawColor(renderer_, 0, 0, 255, 255);
-            change = false;
-        } else {
-            SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-            change = true;
-        }
-        
+}
+
+void Window::render()
+{
+        SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
+
         SDL_RenderClear(renderer_);
 
-        SDL_FRect rect{100, 50, 200, 100};
-
-        SDL_SetRenderDrawColor(renderer_, 255, 255, 255, 100);
-        SDL_RenderFillRect(renderer_, &rect);
+        SDL_RenderTexture(renderer_, texture_, NULL, NULL);
 
         SDL_RenderPresent(renderer_);
 
         SDL_Delay(1);
 
+}
+
+void Window::update(std::array<bool, 64 * 32> buffor)
+{
+    static constexpr uint32_t WHITE_PIXEL = 0xFFFFFFFF;
+    static constexpr uint32_t BLACK_PIXEL = 0x000000FF;
+
+    for (uint32_t i = 0; i < pixels.size(); i++) {
+        if (buffor.at(i)) {
+            pixels.at(i) = WHITE_PIXEL;
+        } else {
+            pixels.at(i) = BLACK_PIXEL;
+        }
     }
+
+    SDL_UpdateTexture(texture_, NULL, pixels.data(), 64 * sizeof(uint32_t));
 }
