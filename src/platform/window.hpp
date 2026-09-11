@@ -3,6 +3,9 @@
 #include <SDL3/SDL.h>
 #include <array>
 
+constexpr uint32_t DISPLAY_height = 32;
+constexpr uint32_t DISPLAY_width = 64;
+
 class Window {
 
 public:
