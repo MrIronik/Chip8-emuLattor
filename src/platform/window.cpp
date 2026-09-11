@@ -1,11 +1,10 @@
 #include "window.hpp"
 
+#include <cstdint>
+#include <vector>
 #include <stdexcept>
 #include <thread>
 #include <chrono>
-
-static constexpr uint32_t WHITE_PIXEL = 0xFFFFFFFF;
-static constexpr uint32_t BLACK_PIXEL = 0x000000FF;
 
 Window::Window()
 {
@@ -69,7 +68,7 @@ void Window::render()
     SDL_Delay(1);
 }
 
-void Window::update(std::array<bool, DISPLAY_height * DISPLAY_width> buffor)
+void Window::update(std::array<uint8_t, WINDOW_width * WINDOW_height> buffor)
 {
     for (uint32_t i = 0; i < pixels.size(); i++)
     {

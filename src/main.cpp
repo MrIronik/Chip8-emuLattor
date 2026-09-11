@@ -6,11 +6,12 @@
 
 #include "window.hpp"
 
-std::array<bool, DISPLAY_height * DISPLAY_width> display; // Should bd in chip8 class
 
 int main(int argc, char *argv[])
 {
     Window window;
+
+    std::array<uint8_t, WINDOW_width * WINDOW_height> display = {};
 
     while (window.is_running_)
     {

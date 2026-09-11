@@ -1,12 +1,26 @@
 #pragma once
 
 #include <SDL3/SDL.h>
-#include <array>
-
-constexpr uint32_t DISPLAY_height = 32;
-constexpr uint32_t DISPLAY_width = 64;
+#include <cstdint>
+#include <vector>
 
 class Window {
+
+private:
+    /* SDL Library Variables */
+    SDL_Window* window_{};
+    SDL_Renderer* renderer_{};
+    SDL_Texture* texture_{};
+
+    /* Display Variables */
+    static constexpr uint32_t WHITE_PIXEL = 0xFFFFFFFF;
+    static constexpr uint32_t BLACK_PIXEL = 0x000000FF;
+    static constexpr short WINDOW_width = 64;
+    static constexpr short WINDOW_height = 32;
+
+    std::array<uint32_t, WINDOW_width * WINDOW_height> pixels = { 0xFFFFFFFF };      // Basic set tu Black
+
+    /* Keyboard Variables */
 
 public:
     /* Logic Variables */
@@ -22,20 +36,8 @@ public:
 
     /* Basic Display Functions*/
     void render();
-    void update(std::array<bool, 64 * 32> buffor);
+    void update(std::array<uint8_t, WINDOW_width * WINDOW_height> buffor);
 
     /* Basic Sound Functions */
-
-private:
-
-    /* SDL Library Variables */
-    SDL_Window* window_{};
-    SDL_Renderer* renderer_{};
-    SDL_Texture* texture_{};
-
-    /* Display Variables */
-    std::array<uint32_t, 64 * 32> pixels = { 0xFFFFFFFF };      // Basic set tu Black
-
-    /* Keyboard Variables */
 
 };
