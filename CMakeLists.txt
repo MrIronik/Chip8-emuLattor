@@ -7,13 +7,14 @@ find_package(SDL3 REQUIRED)
 
 add_executable(emuLattor
     src/main.cpp
-
+    src/chip8/chip8.cpp
     src/platform/window.cpp
 )
 
 target_include_directories(emuLattor 
     PRIVATE
         src/platform
+        src/chip8
 )
 
 target_link_libraries(emuLattor
