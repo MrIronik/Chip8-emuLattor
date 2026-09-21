@@ -5,22 +5,28 @@
 #include <cstdint>
 
 #include "window.hpp"
+#include "chip8.hpp"
 
+Window window;
+Chip8 chip;
 
 int main(int argc, char *argv[])
 {
-    Window window;
-
-    std::array<uint8_t, WINDOW_width * WINDOW_height> display = {};
+    chip.init();
+    chip.load("test");
 
     while (window.is_running_)
     {
         window.event();
 
-        for (auto &pixel : display)
+        chip.emulateCycle();
+
+        
+
+
+        if (chip.draw_flag)
         {
-            pixel = !pixel;
-            window.update(display);
+            window.update(chip.gfx);
             window.render();
         }
     }
