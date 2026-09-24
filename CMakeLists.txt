@@ -3,39 +3,38 @@ project(Chip8-emuLattor)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# include(FetchContent)
-
-# FetchContent_Declare(
-#     googletest
-#     URL https://github.com/google/googletest/archive/refs/heads/main.zip
-# )
-
-# FetchContent_MakeAvailable(googletest)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(SDL3 REQUIRED)
 find_package(GTest REQUIRED)
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
+add_library(chip8
+    src/chip8/chip8.cpp
+)
+
+target_include_directories(chip8
+    PUBLIC
+        src/chip8
+)
+
 add_executable(emuLattor
     src/main.cpp
-    src/chip8/chip8.cpp
     src/platform/window.cpp
 )
 
 target_include_directories(emuLattor 
     PRIVATE
         src/platform
-        src/chip8
 )
 
 target_link_libraries(emuLattor
     PRIVATE
+        chip8
         SDL3::SDL3
 )
 
 # Tests
-
 enable_testing()
 
 # Generate test ROMs
@@ -47,16 +46,12 @@ add_custom_target(generate_test_roms
 
 add_executable(chip8_tests
     tests/chip8_test.cpp
-    src/chip8/chip8.cpp
-)
-
-target_include_directories(chip8_tests
-    PRIVATE
-    src/chip8
 )
 
 target_link_libraries(chip8_tests
-    GTest::gtest_main
+    PRIVATE
+        GTest::gtest_main
+        chip8
 )
 
 add_dependencies(chip8_tests generate_test_roms)
