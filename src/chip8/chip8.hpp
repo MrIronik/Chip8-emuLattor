@@ -7,7 +7,7 @@
 static constexpr short SCREEN_width = 64;
 static constexpr short SCREEN_hight = 32;
 static constexpr short FONTSET_size = (5 * 16);
-static constexpr short PROGRAM_start = 0x200;   // 512
+static constexpr short PROGRAM_start = 0x200; // 512
 
 static constexpr short MEMORY_size = 4096;
 static constexpr short CPU_registers_number = 16;
@@ -44,7 +44,7 @@ private:
 
     std::array<uint8_t, CPU_registers_number> V;
 
-    uint16_t I;                  // index register
+    uint16_t I; // index register
     uint16_t program_counter;
 
     uint8_t delay_timer;
@@ -58,41 +58,42 @@ private:
     bool draw_flag;                                       // update window
     std::array<uint8_t, SCREEN_width * SCREEN_hight> gfx; // screen buffer
 
-
     /* Callback opcode */
     void OP_0x00E0_Handler(void);
+    void OP_0x00EE_Handler(void);
+    void OP_0x2NNN_Handler(void);
 
 public:
     /* Init chip8 and setup for emulation */
-    void init();
-    void load(const std::string& path_to_file);
+    void init(void);
+    void load(const std::string &path_to_file);
 
     /* Emulation goes brrrrr */
-    void emulateCycle();
+    void emulateCycle(void);
 
     /* Some sweet user imputs */
-    void setKeys();
+    void setKeys(void);
 
     /* Getter functions */
-    uint16_t getOpcode();
+    uint16_t getOpcode(void);
 
-    std::array<uint8_t, MEMORY_size> getMemory() const;
+    std::array<uint8_t, MEMORY_size> getMemory(void) const;
 
-    std::array<uint8_t, CPU_registers_number> getV() const;
+    std::array<uint8_t, CPU_registers_number> getV(void) const;
 
-    uint16_t getIndex_register();   // index register
-    uint16_t getProgram_counter();
+    uint16_t getIndex_register(void); // index register
+    uint16_t getProgram_counter(void);
 
-    uint8_t getDelay_timer();
-    uint8_t getSound_timer();
+    uint8_t getDelay_timer(void);
+    uint8_t getSound_timer(void);
 
-    std::array<uint16_t, CPU_stack_size> getStack() const;
-    uint16_t getStack_pointer();
+    std::array<uint16_t, CPU_stack_size> getStack(void) const;
+    uint16_t getStack_pointer(void);
 
-    std::array<uint16_t, KEYPAD_size> getkey() const;
+    std::array<uint16_t, KEYPAD_size> getkey(void) const;
 
-    bool getDraw_flag();
-    std::array<uint8_t, SCREEN_width * SCREEN_hight> getGfx() const;
+    bool getDraw_flag(void);
+    std::array<uint8_t, SCREEN_width * SCREEN_hight> getGfx(void) const;
 };
 
 /*                     MEMORY MAP
@@ -106,18 +107,18 @@ public:
 /*                      OPCODES
  *
  *  [x] 00E0 - clear the screen
- *  [ ] 00EE - return from subroutine to address pulled from stack
+ *  [x] 00EE - return from subroutine to address pulled from stack
  *  [ ] 0NNN - jump to native assembler subroutine at 0xNNN
  *  [ ] 1NNN - jump to address NNN
- *  [ ] 2NNN - push return address onto stack and call subroutine at address NNN
- *  [ ] 3XNN - skip next opcode if vX == NN 
+ *  [x] 2NNN - push return address onto stack and call subroutine at address NNN
+ *  [ ] 3XNN - skip next opcode if vX == NN
  *  [ ] 4XNN - skip next opcode if vX != NN
  *  [ ] 5XY0 - skip next opcode if vX == vY
  *  [ ] 6XNN - set vX to NN
  *  [ ] 7XNN - add NN to vX
  *  [ ] 8XY0 - set vX to the value of vY
  *  [ ] 8XY1 - set vX to the result of bitwise vX OR vY
- *  [ ] 8XY2 - set vX to the result of bitwise vX AND vY 
+ *  [ ] 8XY2 - set vX to the result of bitwise vX AND vY
  *  [ ] 8XY3 - set vX to the result of bitwise vX XOR vY
  *  [ ] 8XY4 - add vY to vX, vF is set to 1 if an overflow happened, to 0 if not, even if X=F!
  *  [ ] 8XY5 - subtract vY from vX, vF is set to 0 if an underflow happened, to 1 if not, even if X=F!
@@ -139,5 +140,5 @@ public:
  *  [ ] FX33 - write the value of vX as BCD value at the addresses I, I+1 and I+2
  *  [ ] FX55 - write the content of v0 to vX at the memory pointed to by I, I is incremented by X+1
  *  [ ] FX65 - read the bytes from memory pointed to by I into the registers v0 to vX, I is incremented by X+1
- * 
+ *
  */

@@ -44,7 +44,7 @@ Window::~Window()
     SDL_Quit();
 }
 
-void Window::event()
+void Window::event(void)
 {
     SDL_Event event;
 
@@ -55,7 +55,7 @@ void Window::event()
     }
 }
 
-void Window::render()
+void Window::render(void)
 {
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
 
@@ -67,7 +67,6 @@ void Window::render()
 
     SDL_Delay(1);
 }
-
 void Window::update(std::array<uint8_t, WINDOW_width * WINDOW_height> buffor)
 {
     for (uint32_t i = 0; i < pixels.size(); i++)

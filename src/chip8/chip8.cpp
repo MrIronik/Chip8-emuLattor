@@ -4,7 +4,7 @@
 
 #include "chip8.hpp"
 
-void Chip8::init()
+void Chip8::init(void)
 {
     /* Set the default/starting values of chip8 */
     program_counter = 0x200;
@@ -48,7 +48,7 @@ void Chip8::init()
     sound_timer = 0;
 }
 
-void Chip8::load(const std::string& path_to_file)
+void Chip8::load(const std::string &path_to_file)
 {
     std::ifstream rom(path_to_file, std::ios::binary);
 
@@ -71,25 +71,35 @@ void Chip8::load(const std::string& path_to_file)
 
     rom.read(
         reinterpret_cast<char *>(memory.data() + program_start),
-        static_cast<std::streamsize>(rom_size)
-    );
+        static_cast<std::streamsize>(rom_size));
 }
 
-void Chip8::emulateCycle()
+void Chip8::emulateCycle(void)
 {
     /* Fetch opcode form memory */
-    opcode = memory.at(program_counter) << 8 | memory.at(program_counter + 1);
+    opcode = (memory.at(program_counter) << 8 | memory.at(program_counter + 1));
 
     /* Decode opcode */
     // TODO: Man it will be looong switch, do something about it...
     switch (opcode & 0xF000)
     {
-    case 0x00E0: // Clear screen
-        OP_0x00E0_Handler();
+    case 0x0000: // Clear screen
+        switch (opcode)
+        {
+        case 0x00E0:
+            OP_0x00E0_Handler();
+            break;
+        case 0x00EE:
+            OP_0x00EE_Handler();
+            break;
+        default:
+            break;
+        }
         break;
 
-    case 0x00EE: // return from subroutine to address pulled from stack
-        
+    case 0x2000:
+        OP_0x2NNN_Handler();
+        break;
 
     case 0xA000:
         I = opcode & 0x0FFF;
@@ -97,7 +107,9 @@ void Chip8::emulateCycle()
         break;
 
     default:
-        printf("Unknown opcode 0x%X\n", opcode);
+        throw std::runtime_error(
+            "emulateCycle error: Unknown opcode 0x" +
+            std::to_string(opcode) + "\n");
         return;
     }
 
@@ -115,62 +127,62 @@ void Chip8::emulateCycle()
 // void Chip8::setKeys();
 
 /* Chip8 getter functions */
-uint16_t Chip8::getOpcode()
+uint16_t Chip8::getOpcode(void)
 {
     return opcode;
 }
 
-std::array<uint8_t, MEMORY_size> Chip8::getMemory() const
+std::array<uint8_t, MEMORY_size> Chip8::getMemory(void) const
 {
     return memory;
 }
 
-std::array<uint8_t, CPU_registers_number> Chip8::getV() const
+std::array<uint8_t, CPU_registers_number> Chip8::getV(void) const
 {
     return V;
 }
 
-uint16_t Chip8::getIndex_register()
+uint16_t Chip8::getIndex_register(void)
 {
     return I;
-}   // index register
+} // index register
 
-uint16_t Chip8::getProgram_counter()
+uint16_t Chip8::getProgram_counter(void)
 {
     return program_counter;
 }
 
-uint8_t Chip8::getDelay_timer()
+uint8_t Chip8::getDelay_timer(void)
 {
     return delay_timer;
 }
 
-uint8_t Chip8::getSound_timer()
+uint8_t Chip8::getSound_timer(void)
 {
     return sound_timer;
 }
 
-std::array<uint16_t, CPU_stack_size> Chip8::getStack() const
+std::array<uint16_t, CPU_stack_size> Chip8::getStack(void) const
 {
     return stack;
 }
 
-uint16_t Chip8::getStack_pointer()
+uint16_t Chip8::getStack_pointer(void)
 {
     return stack_pointer;
 }
 
-std::array<uint16_t, KEYPAD_size> Chip8::getkey() const
+std::array<uint16_t, KEYPAD_size> Chip8::getkey(void) const
 {
     return key;
 }
 
-bool Chip8::getDraw_flag()
+bool Chip8::getDraw_flag(void)
 {
     return draw_flag;
 }
 
-std::array<uint8_t, SCREEN_width * SCREEN_hight> Chip8::getGfx() const
+std::array<uint8_t, SCREEN_width * SCREEN_hight> Chip8::getGfx(void) const
 {
     return gfx;
 }
@@ -180,8 +192,26 @@ std::array<uint8_t, SCREEN_width * SCREEN_hight> Chip8::getGfx() const
 void Chip8::OP_0x00E0_Handler(void)
 {
     for (auto &pixel : gfx)
-        {
-            pixel = 0;
-        }
-        program_counter += 2;
+    {
+        pixel = 0;
+    }
+
+    program_counter += 2;
+}
+
+void Chip8::OP_0x00EE_Handler(void)
+{
+    --stack_pointer;
+    program_counter = stack[stack_pointer];
+    stack[stack_pointer] = 0x00;
+}
+
+
+
+void Chip8::OP_0x2NNN_Handler(void)
+{
+    stack[stack_pointer] = program_counter + 0x02;
+    ++stack_pointer;
+
+    program_counter = opcode & 0x0FFF;
 }

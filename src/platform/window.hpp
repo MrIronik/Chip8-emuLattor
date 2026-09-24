@@ -32,10 +32,10 @@ public:
 
 
     /* Basic Event Functions */
-    void event();
+    void event(void);
 
     /* Basic Display Functions*/
-    void render();
+    void render(void);
     void update(std::array<uint8_t, WINDOW_width * WINDOW_height> buffor);
 
     /* Basic Sound Functions */

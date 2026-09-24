@@ -10,8 +10,10 @@ memory_size = 4096
 max_rom_size = memory_size - blank_memory
 
 roms = {
-    "Load.ch8": [0x01] * max_rom_size,
-    "OP_0x00E0.ch8":   [0x00, 0xE0],
+    "Load.ch8":         [0x01] * max_rom_size,
+    "OP_0x00E0.ch8":    [0x00, 0xE0],
+    "OP_0x00EE.ch8":    [0x22, 0x04, 0x00, 0x00, 0x00, 0xEE],
+    "OP_0x2NNN.ch8":    [0x22, 0x22],
 }
 
 # output = Path("test_roms")
