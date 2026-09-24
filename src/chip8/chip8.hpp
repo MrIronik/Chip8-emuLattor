@@ -33,67 +33,70 @@ const static std::array<uint8_t, FONTSET_size> fontset = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-class Chip8
-{
+class Chip8 {
 
 private:
-    /* Virtual Hardware */
-    uint16_t opcode;
+  /* Virtual Hardware */
+  uint16_t opcode;
 
-    std::array<uint8_t, MEMORY_size> memory;
+  std::array<uint8_t, MEMORY_size> memory;
 
-    std::array<uint8_t, CPU_registers_number> V;
+  std::array<uint8_t, CPU_registers_number> V;
 
-    uint16_t I; // index register
-    uint16_t program_counter;
+  uint16_t I; // index register
+  uint16_t program_counter;
 
-    uint8_t delay_timer;
-    uint8_t sound_timer;
+  uint8_t delay_timer;
+  uint8_t sound_timer;
 
-    std::array<uint16_t, CPU_stack_size> stack;
-    uint16_t stack_pointer;
+  std::array<uint16_t, CPU_stack_size> stack;
+  uint16_t stack_pointer;
 
-    std::array<uint16_t, KEYPAD_size> key;
+  std::array<uint16_t, KEYPAD_size> key;
 
-    bool draw_flag;                                       // update window
-    std::array<uint8_t, SCREEN_width * SCREEN_hight> gfx; // screen buffer
+  bool draw_flag;                                       // update window
+  std::array<uint8_t, SCREEN_width * SCREEN_hight> gfx; // screen buffer
 
-    /* Callback opcode */
-    void OP_0x00E0_Handler(void);
-    void OP_0x00EE_Handler(void);
-    void OP_0x2NNN_Handler(void);
+  /* Callback opcode */
+  void OP_0x00E0_Handler(void);
+  void OP_0x00EE_Handler(void);
+  void OP_0x0NNN_Handler(void);
+  void OP_0x1NNN_Handler(void);
+  void OP_0x2NNN_Handler(void);
+  void OP_0x3XNN_Handler(void);
+  void OP_6XNN_Handler(void);
 
 public:
-    /* Init chip8 and setup for emulation */
-    void init(void);
-    void load(const std::string &path_to_file);
+  /* Init chip8 and setup for emulation */
+  void init(void);
+  void load(const std::string &path_to_file);
 
-    /* Emulation goes brrrrr */
-    void emulateCycle(void);
+  /* Emulation goes brrrrr */
+  void emulateCycle(void);
 
-    /* Some sweet user imputs */
-    void setKeys(void);
+  /* Some sweet user imputs */
+  void setKeys(void);
 
-    /* Getter functions */
-    uint16_t getOpcode(void);
+  /* Getter functions */
+  uint16_t getOpcode(void);
 
-    std::array<uint8_t, MEMORY_size> getMemory(void) const;
+  std::array<uint8_t, MEMORY_size> getMemory(void) const;
 
-    std::array<uint8_t, CPU_registers_number> getV(void) const;
+  std::array<uint8_t, CPU_registers_number> getV(void) const;
 
-    uint16_t getIndex_register(void); // index register
-    uint16_t getProgram_counter(void);
+  uint16_t getIndex_register(void); // index register
+  uint16_t getProgram_counter(void);
 
-    uint8_t getDelay_timer(void);
-    uint8_t getSound_timer(void);
+  uint8_t getDelay_timer(void);
+  uint8_t getSound_timer(void);
 
-    std::array<uint16_t, CPU_stack_size> getStack(void) const;
-    uint16_t getStack_pointer(void);
+  std::array<uint16_t, CPU_stack_size> getStack(void) const;
+  uint16_t getStack_pointer(void);
 
-    std::array<uint16_t, KEYPAD_size> getkey(void) const;
+  std::array<uint16_t, KEYPAD_size> getkey(void) const;
 
-    bool getDraw_flag(void);
-    std::array<uint8_t, SCREEN_width * SCREEN_hight> getGfx(void) const;
+  bool getDraw_flag(void);
+  std::array<uint8_t, SCREEN_width * SCREEN_hight> getGfx(void) const;
 };
 
 /*                     MEMORY MAP
@@ -108,13 +111,13 @@ public:
  *
  *  [x] 00E0 - clear the screen
  *  [x] 00EE - return from subroutine to address pulled from stack
- *  [ ] 0NNN - jump to native assembler subroutine at 0xNNN
- *  [ ] 1NNN - jump to address NNN
+ *  [x] 0NNN - jump to native assembler subroutine at 0xNNN
+ *  [x] 1NNN - jump to address NNN
  *  [x] 2NNN - push return address onto stack and call subroutine at address NNN
- *  [ ] 3XNN - skip next opcode if vX == NN
+ *  [x] 3XNN - skip next opcode if vX == NN
  *  [ ] 4XNN - skip next opcode if vX != NN
  *  [ ] 5XY0 - skip next opcode if vX == vY
- *  [ ] 6XNN - set vX to NN
+ *  [x] 6XNN - set vX to NN
  *  [ ] 7XNN - add NN to vX
  *  [ ] 8XY0 - set vX to the value of vY
  *  [ ] 8XY1 - set vX to the result of bitwise vX OR vY
