@@ -3,9 +3,15 @@
 #include <cstdint>
 #include <vector>
 
+/* Constas Parameters */
 static constexpr short SCREEN_width = 64;
 static constexpr short SCREEN_hight = 32;
 static constexpr short FONTSET_size = (5 * 16);
+
+static constexpr short MEMORY_size = 4096;
+static constexpr short CPU_registers_number = 16;
+static constexpr short CPU_stack_size = 16;
+static constexpr short KEYPAD_size = 16;
 
 const static std::array<uint8_t, FONTSET_size> fontset = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -30,18 +36,12 @@ class Chip8
 {
 
 private:
-    /* Constas Parameters */
-    static constexpr short MEMORY_size = 4096;
-    static constexpr short CPU_registers_number = 16;
-    static constexpr short CPU_stack_size = 16;
-    static constexpr short KEYPAD_size = 16;
-
     /* Virtual Hardware */
     uint16_t opcode;
 
     std::array<uint8_t, MEMORY_size> memory;
 
-    uint8_t V[CPU_registers_number];
+    std::array<uint8_t, CPU_registers_number> V;
 
     uint16_t I;                  // index register
     uint16_t program_counter;
@@ -54,10 +54,14 @@ private:
 
     std::array<uint16_t, KEYPAD_size> key;
 
-public:
     bool draw_flag;                                       // update window
     std::array<uint8_t, SCREEN_width * SCREEN_hight> gfx; // screen buffer
 
+
+    /* Callback opcode */
+    void OP_0x00E0_Handler(void);
+
+public:
     /* Init chip8 and setup for emulation */
     void init();
     void load(const std::string path_to_file);
@@ -67,6 +71,27 @@ public:
 
     /* Some sweet user imputs */
     void setKeys();
+
+    /* Getter functions */
+    uint16_t getOpcode();
+
+    std::array<uint8_t, MEMORY_size> getMemory() const;
+
+    std::array<uint8_t, CPU_registers_number> getV() const;
+
+    uint16_t getIndex_register();   // index register
+    uint16_t getProgram_counter();
+
+    uint8_t getDelay_timer();
+    uint8_t getSound_timer();
+
+    std::array<uint16_t, CPU_stack_size> getStack() const;
+    uint16_t getStack_pointer();
+
+    std::array<uint16_t, KEYPAD_size> getkey() const;
+
+    bool getDraw_flag();
+    std::array<uint8_t, SCREEN_width * SCREEN_hight> getGfx() const;
 };
 
 /*                     MEMORY MAP
@@ -79,7 +104,7 @@ public:
 
 /*                      OPCODES
  *
- *  [ ] 00E0 - clear the screen
+ *  [x] 00E0 - clear the screen
  *  [ ] 00EE - return from subroutine to address pulled from stack
  *  [ ] 0NNN - jump to native assembler subroutine at 0xNNN
  *  [ ] 1NNN - jump to address NNN
