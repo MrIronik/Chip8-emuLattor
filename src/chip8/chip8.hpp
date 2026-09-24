@@ -7,6 +7,7 @@
 static constexpr short SCREEN_width = 64;
 static constexpr short SCREEN_hight = 32;
 static constexpr short FONTSET_size = (5 * 16);
+static constexpr short PROGRAM_start = 0x200;   // 512
 
 static constexpr short MEMORY_size = 4096;
 static constexpr short CPU_registers_number = 16;
@@ -64,7 +65,7 @@ private:
 public:
     /* Init chip8 and setup for emulation */
     void init();
-    void load(const std::string path_to_file);
+    void load(const std::string& path_to_file);
 
     /* Emulation goes brrrrr */
     void emulateCycle();
@@ -131,7 +132,7 @@ public:
  *  [ ] EXA1 - skip next opcode if key in the lower 4 bits of vX is not pressed
  *  [ ] FX07 - set vX to the value of the delay timer
  *  [ ] FX0A - wait for a key pressed and released and set vX to it, in megachip mode it also updates the screen like clear
- *  [ ] Fx15 - set delay timer to vX
+ *  [ ] FX15 - set delay timer to vX
  *  [ ] FX18 - set sound timer to vX, sound is played as long as the sound timer reaches zero
  *  [ ] FX1E - add vX to I
  *  [ ] FX29 - set I to the 5 line high hex sprite for the lowest nibble in vX

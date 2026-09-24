@@ -19,9 +19,9 @@ void Chip8::init()
     }
 
     /* Clear chip8's stack */
-    for (auto &address : stack)
+    for (auto &byte : stack)
     {
-        address = 0;
+        byte = 0;
     }
 
     /* Clear CPU registers */
@@ -31,9 +31,9 @@ void Chip8::init()
     }
 
     /* Clear memory */
-    for (auto &address : memory)
+    for (auto &byte : memory)
     {
-        address = 0;
+        byte = 0;
     }
 
     /* Load Fontset */
@@ -48,22 +48,31 @@ void Chip8::init()
     sound_timer = 0;
 }
 
-void Chip8::load(const std::string path_to_file)
+void Chip8::load(const std::string& path_to_file)
 {
-    // (void)path_to_file; // TODO: Implement picking and openinge the file. Propably from terminal input
-
-    // std::ifstream rom("../ROMS/chip8-logo.ch8", std::ios::binary);
     std::ifstream rom(path_to_file, std::ios::binary);
 
     if (!rom)
     {
-        std::runtime_error("Filed to open ROM\n");
-        return;
+        throw std::runtime_error("Failed to open ROM: " + path_to_file);
+    }
+
+    rom.seekg(0, std::ios::end);
+    const auto rom_size = rom.tellg();
+    rom.seekg(0, std::ios::beg);
+
+    constexpr std::size_t program_start = 0x200;
+    const std::size_t available = memory.size() - program_start;
+
+    if (rom_size > static_cast<std::streamoff>(available))
+    {
+        throw std::runtime_error("ROM is to large");
     }
 
     rom.read(
-        reinterpret_cast<char *>(memory.data() + 0x200),
-        memory.size() - 0x200);
+        reinterpret_cast<char *>(memory.data() + program_start),
+        static_cast<std::streamsize>(rom_size)
+    );
 }
 
 void Chip8::emulateCycle()

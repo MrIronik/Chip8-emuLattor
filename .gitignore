@@ -44,4 +44,3 @@
 # Project
 .vscode/
 /build/
-/tests/test_roms/
