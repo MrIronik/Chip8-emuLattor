@@ -49,7 +49,8 @@ TEST(Chip8_Opcode_Test, OP_0x00E0)
 {
     Chip8 chip;
     chip.init();
-    chip.load("../tests/OP_Test_0x00E0.ch8");
+    // TODO: First load .ch8 file that write screen, useless test for now
+    chip.load("../tests/test_roms/OP_Test_0x00E0.ch8");
 
     chip.emulateCycle();
 
