@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
         
 
 
-        if (chip.draw_flag)
+        if (chip.getDraw_flag())
         {
-            window.update(chip.gfx);
+            window.update(chip.getGfx());
             window.render();
         }
     }
